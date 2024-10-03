@@ -9,6 +9,8 @@ namespace Reddit
         public DbSet<Comment> Comments { get; set; }
         public DbSet<User> Users { get; set; }
 
+        public DbSet<Community> Communities { get; set; }
+
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options):
             base(options) 
@@ -17,6 +19,17 @@ namespace Reddit
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Community>(entity =>
+            {
+                entity.HasOne(c => c.Owner)
+                      .WithMany(u => u.OwnedCommunities)
+                      .HasForeignKey(e => e.OwnerId)
+                      .OnDelete(DeleteBehavior.SetNull);
+
+                entity.HasMany(c => c.Subscribers)
+                      .WithMany(u => u.SubscribedCommunities);
+            });
+
             modelBuilder.Entity<Comment>()
                           .HasOne(c => c.Post)
                           .WithMany(p => p.Comments)

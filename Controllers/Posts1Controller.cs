@@ -73,13 +73,23 @@ namespace Reddit.Controllers
         [HttpPost]
         public async Task<ActionResult<Post>> PostPost(PostDto postDto)
         {
+            var community = await _context.Communities.FindAsync(postDto.CommunityId);
+
+            if (community == null)
+            {
+                return NotFound("Community not found.");
+            }
+
             var post = postDto.CreatePost();
+
+            post.PostCommunities.Add(community);
 
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetPost", new { id = post.Id }, post);
         }
+
 
         // DELETE: api/Posts1/5
         [HttpDelete("{id}")]
