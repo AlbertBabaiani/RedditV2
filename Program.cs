@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Reddit;
+using Reddit.Repositories;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +26,7 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
         .AllowAnyHeader()
         .AllowAnyMethod()));
 
+builder.Services.AddScoped<ICommunityRepository, CommunityRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
